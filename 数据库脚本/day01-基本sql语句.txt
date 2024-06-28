@@ -1,0 +1,21 @@
+# 基本查询
+select * from user;
+select * from admin;
+select * from category;
+select * from video;
+select * from comment;
+select * from favorite;
+
+-- 向频道表（category）插入3条数据（搞笑,生活,游戏）
+insert into category(name,summary,img)
+values ('搞笑','搞笑一下','http://www.softeem.com/img/1.jpg'),
+('生活','艺术源于生活','http://www.softeem.com/img/2.jpg'),
+('游戏','精彩世界尽在游戏','http://www.softeem.com/img/3.jpg')
+
+-- 将所有视频设置到 生活 频道
+update video set cid=3 where id=1
+
+-- 删除id为1的频道
+delete from category where id=1
+
+-- 思考：查询所有视频的详细信息，要求包含视频的作者，审核员以及频道信息？
