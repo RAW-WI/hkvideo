@@ -1,13 +1,21 @@
 # hbc
 
-#### 介绍
+## 介绍
 湖北商贸学院Java实习资料汇总
 
-#### 软件架构
-软件架构说明
+## 软件架构
+本项目基于前后端半分离模式实现，后端技术采用Spring+MybatisPlus+OSS技术
+前端部分使用Layui一体化框架
 
+## 部分技术栈
++ SpringBoot
++ Mybatis/MybatisPlus
++ 七牛OSS
++ Hutool
++ Jquery+LayUI
++ Mysql
 
-#### 安装教程
+## 安装教程
 
 1.  xxxx
 2.  xxxx
