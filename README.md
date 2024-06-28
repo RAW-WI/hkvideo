@@ -17,9 +17,12 @@
 
 ## 安装教程
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+1. 运行项目
+```bash
+java -jar hbc.jar 
+```
+2. xxxx
+3. xxxx
 
 #### 使用说明
 
