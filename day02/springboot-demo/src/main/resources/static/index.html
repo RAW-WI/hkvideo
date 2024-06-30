@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <h1>这里是首页</h1>
+    <hr>
+    <form id="loginForm">
+        <input type="text" name="username" placeholder="请输入用户名"><br>
+        <input type="password" name="password" placeholder="请输入密码"><br>
+        <button type="button">登录</button>
+    </form>
+    <!--引入jQuery库-->
+    <script src="./js/jquery-3.7.1.min.js"></script>
+    <script>
+        $(function(){
+            //选中按钮并绑定点击事件
+            $('button').on('click',function(){
+                //获取表单数据并序列化为查询参数
+                let data = $('#loginForm').serialize();
+                //发送请求到服务端
+                $.get('/login',data,function(resp){
+                    if(resp.code === 1){
+                        location.href='main.html'
+                    }else{
+                        alert(resp.msg)
+                    }
+                })
+            })
+        })
+    </script>
+</body>
+</html>

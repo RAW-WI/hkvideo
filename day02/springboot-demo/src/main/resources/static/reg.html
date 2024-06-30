@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <!--自行实现注册前后端功能（数据提交到后端即可，无需存储到数据库）-->
+    <form id="regForm">
+        <input type="text" name="username" placeholder="请输入账号"><br>
+        <input type="password" name="password" placeholder="请输入密码"><br>
+        <input type="password" name="repassword" placeholder="请输入重复密码"><br>
+        <button type="button">用户注册</button>
+    </form>
+
+    <script src="./js/jquery-3.7.1.min.js"></script>
+    <script>
+        $(function(){
+            $('button').on('click',function(){
+                //username=XXX&password=XXX&repassword=XXX
+                let data = $('#regForm').serialize()
+                $.post('/reg',data,function(resp){
+                    console.log(resp)
+                    if(resp.code === 1){
+                       location.href='index.html'
+                    }else{
+                        alert(resp.msg)
+                    }
+                })
+            })
+        })
+    </script>
+</body>
+</html>

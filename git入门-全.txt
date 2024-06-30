@@ -1,0 +1,48 @@
+一、Git基本使用
+1. 自报家门(配置当前git的使用者信息)
+git config --global user.name "mrchai"
+git config --global user.email "630674409@qq.com"
+
+2. 查看使用者信息
+git config user.name
+git config user.email
+
+3. 初始化本地仓库
+git init
+
+4. 将更改添加到暂存区
+git add 文件名    # 将指定的文件交给git管理 如果有多个文件 使用空格隔开
+git add .    # 将当前目录下所有的内容加入暂存区
+
+5. 查看暂存区的更改(新增，修改，删除)情况
+git status
+
+6. 提交暂存区的更改到本地仓库
+git commit -m "为何提交"
+
+7. 查看当前仓库的版本信息
+git log
+
+二、Git版本控制
+1. 格式化版本记录为一行输出
+git log --pretty=oneline
+
+2.版本穿梭
+git reset --hard 版本id(前5-6位即可)
+
+3.查看历史回退记录
+git reflog
+
+三、远程仓库使用(github/gitee)
+1. 已有本地仓库情况
+1.1. 远程创建空仓库
+1.2. 设置本地仓库远程源
+git remote add origin https://gitee.com/mrchai/gitresp.git
+
+1.3. 推送本地仓库到远程
+git push origin master
+
+2. 初始化远程仓库
+2.1. 远程创建仓库并初始化
+2.2. 克隆远程项目到本地
+git clone https://gitee.com/mrchai/hbc.git
