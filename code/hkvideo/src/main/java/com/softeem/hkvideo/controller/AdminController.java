@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Objects;
+
 @RequestMapping("/admin")
 @RestController
 public class AdminController {
@@ -40,5 +42,29 @@ public class AdminController {
         //4.保存到数据库
         return adminService.save(admin) ? R.ok().setMsg("添加成功").setData(admin) : R.fail().setMsg("添加失败");
     }
+
+    /**
+     * 管理员登录,提供账号密码
+     */
+    @RequestMapping("/login")
+    public R login(Admin admin) {
+        //1.根据账号，查询数据库
+        Admin admin1 = adminService.getOne(Wrappers.query(Admin.class).eq("username",admin.getUsername()));
+        if(Objects.isNull(admin1)){
+            //账号不存在
+            return R.fail().setMsg("账号不存在");
+        }
+        if(admin1.getStatus() != 0){
+            //账号被禁用
+            return R.fail().setMsg("账号被禁用");
+        }
+        if(admin1.getPassword().equals(SecureUtil.md5(admin.getPassword() + admin1.getSalt()))){
+            //登录成功
+            return R.ok().setMsg("登录成功").setData(admin1);
+        }
+        //密码错误
+        return R.fail().setMsg("密码错误");
+    }
+
 
 }

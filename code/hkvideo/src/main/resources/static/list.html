@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="layui/css/layui.css">
+</head>
+<body>
+
+    <div class="layui-container">
+        <fieldset class="layui-elem-field layui-field-title">
+            <legend>用户列表</legend>
+        </fieldset>
+        <!--数据表格渲染区域-->
+        <table id="userTab"></table>
+    </div>
+
+    <script src="layui/layui.js"></script>
+
+    <script>
+        //加载layui模块
+        layui.use(function(){
+            //获取表格组件
+            let table = layui.table
+            //数据表格渲染
+            table.render({
+                elem:'#userTab'   //绑定需要渲染的表格元素（id选择器）
+                ,url:'/user/list' //服务端提供数据列表的接口地址
+                ,page:{         //开启分页
+                    limit:5
+                    ,limits:[5,10,15,20]
+                }
+                ,cols:[[        //根据接口地址返回的数据进行数据表格单元格（表头）配置
+                    {type:'checkbox'}               //复选框列（内置属性）
+                    ,{title:'序号',type:'numbers'}  //序号列(内置属性)
+                    ,{title:'用户名',field:'username'}
+                    ,{title:'联系方式',field:'phone'}
+                    ,{title:'注册时间',field:'regtime'}
+                    ,{title:'生日',field:'birth'}
+                    ,{title:'状态',field:'status'}
+                ]]
+            })
+        })
+    </script>
+</body>
+</html>

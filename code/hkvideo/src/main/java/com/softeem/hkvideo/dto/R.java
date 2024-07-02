@@ -31,6 +31,9 @@ public class R {
      */
     private boolean success;
 
+    /**数据结果集的总条数：前端分页用*/
+    private Long count;
+
     /**
      * 创建并返回一个表示操作成功的响应对象。
      * <p>
