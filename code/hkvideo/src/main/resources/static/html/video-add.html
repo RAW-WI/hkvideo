@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="../res/layui/css/layui.css">
+
+</head>
+<body>
+<div class="layui-fluid">
+    <fieldset class="layui-elem-field layui-field-title">
+        <legend>视频上传</legend>
+        <div class="layui-field-box">
+            <div class="layui-col-md6">
+                <form class="layui-form layui-form-pane" lay-filter="formMusic" id="formMusic">
+                    <!--表单控件项：文件上传（歌曲文件）-->
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">视频封面:</label>
+                        <button class="layui-btn layui-btn-normal" type="button" id="btnCover">
+                            <i class="layui-icon layui-icon-upload"></i>
+                            选择文件
+                        </button>
+                        <!--隐藏域用于存储上传之后的封面图地址，传递到服务端-->
+                        <input type="hidden" name="coverimg" id="coverimg" lay-verify="required" lay-reqText="请上传视频封面图">
+                    </div>
+
+                    <!--表单控件项：文件上传（歌曲文件）-->
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">视频文件:</label>
+                        <button class="layui-btn layui-btn-normal" type="button" id="btnVideo">
+                            <i class="layui-icon layui-icon-upload"></i>
+                            选择文件
+                        </button>
+                        <!--隐藏域用于存储上传之后的视频文件地址，传递到服务端-->
+                        <input type="hidden" name="url" id="url" lay-verify="required"  lay-reqText="请选择视频文件">
+                    </div>
+
+                    <!--歌曲的专辑选择控件-->
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">频道:</label>
+                        <div class="layui-input-block">
+                            <select name="cid" id="cid">
+                                <option value="0">匿名</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!--表单控件项：视频标题-->
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">标题:</label>
+                        <div class="layui-input-block">
+                            <input class="layui-input" type="text" name="title" id="videoname" lay-verify="required"
+                                   lay-verType="tips" lay-reqText="请输入视频标题">
+                        </div>
+                    </div>
+
+                    <!--表单控件项：视频标签-->
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">标签:</label>
+                        <div class="layui-input-block">
+                            <input class="layui-input" type="text" name="tags" id="tags" lay-verify="required"
+                                   lay-verType="tips" placeholder="请输入视频标签,多个标签使用逗号分隔" lay-reqText="请输入视频标签">
+                        </div>
+                    </div>
+
+                    <!-- 视频简介    -->
+                    <div class="layui-form-item layui-form-text">
+                        <label class="layui-form-label">简介:</label>
+                        <div class="layui-input-block">
+                            <textarea name="summary" class="layui-textarea" placeholder="请填写视频简介"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- 提交按钮    -->
+                    <div class="layui-form-item" style="text-align: right">
+                        <button type="button" class="layui-btn layui-btn-warm" lay-submit id="addMusic" lay-filter="addVideo">确认上传
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </fieldset>
+</div>
+<script src="../res/layui/layui.js"></script>
+<script>
+    layui.use(function () {
+        var form = layui.form;
+        var layer = layui.layer;
+        var $ = layui.jquery;
+        //获取文件上传组件
+        var upload = layui.upload;
+
+        //加载所有频道数据
+        $.get('/video/categories',function (resp) {
+            if(resp.code === 0){
+                var channels = resp.data;
+                var html = '';
+                for(var i = 0;i<channels.length;i++){
+                    var channel = channels[i];
+                    html += '<option value="'+channel.id+'">'+channel.name+'</option>';
+                }
+                $('#cid').html(html);
+                form.render('select');
+            }
+        })
+
+
+        //文件上传组件渲染（封面图上传）
+        upload.render({
+            elem:'#btnCover'
+            ,url:'/video/upload'
+            ,acceptMime:'image/*'       //打开文件选择框时自动过滤出的文件类型（图片）
+            ,done:function(resp){ //成功上传之后的回调
+                if(resp.code === 0){
+                    //将服务端返回的文件地址填充到隐藏域中
+                    $('#coverimg').val(resp.data)
+                    console.log(resp)
+                }
+            }
+        })
+
+        //文件上传组件渲染（视频上传）
+        upload.render({
+            elem:'#btnVideo'
+            ,url:'/video/upload'
+            ,accept:'file'       //提交文件前验证的文件类型
+            ,acceptMime:'video/mp4,video/webm,video/ogg,video/mkv' //打开文件选择框时自动过滤出的文件类型（视频）
+            ,before:function(){
+                //上传前显示加载动画
+                layer.load(2)
+            }
+            ,done:function(resp){ //成功上传之后的回调
+                //关闭所有加载层
+                layer.closeAll('loading')
+                if(resp.code === 0){
+                    //将服务端返回的文件地址填充到隐藏域中
+                    $('#url').val(resp.data)
+                    console.log(resp)
+                }
+            }
+        })
+
+        //为表单绑定提交事件
+        form.on('submit(addVideo)',function(data){
+            //获取表单数据
+            let formData = data.field
+            $.get('/video/add',formData,function(resp){
+                layer.msg(resp.msg)
+            })
+            return false
+        })
+
+    })
+</script>
+</body>
+</html>

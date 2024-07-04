@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>好看短视频CMS-后台管理系统</title>
+    <meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport"
+          content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8"/>
+    <meta http-equiv="Cache-Control" content="no-siteapp"/>
+    <link rel="stylesheet" type="text/css" href="./res/css/font.css">
+    <link rel="stylesheet" type="text/css" href="./res/css/xadmin.css">
+    <link rel="stylesheet" type="text/css" href="./res/layui/css/layui.css"/>
+</head>
+<body>
+<!-- 顶部开始 -->
+<div class="container">
+    <div class="logo"><a href="index.html">好看短视频CMS</a></div>
+    <div class="left_open">
+        <i title="展开左侧栏" class="layui-icon layui-icon-app"></i>
+    </div>
+    <ul class="layui-nav right" lay-filter="">
+        <li class="layui-nav-item">
+            <a href="javascript:;"><span id="loginName">登录账户名称</span></a>
+            <dl class="layui-nav-child">
+                <!-- 二级菜单 -->
+                <dd><a href="html/adminInfo.html" target="iframe">账号信息</a></dd>
+                <dd><a href="" id="logoutBtn">安全退出</a></dd>
+            </dl>
+        </li>
+    </ul>
+
+</div>
+<!-- 顶部结束 -->
+<!-- 中部开始 -->
+<!-- 左侧菜单开始 -->
+<div class="left-nav">
+    <div id="side-nav">
+        <ul id="nav">
+            <li>
+                <a href="javascript:;">
+                    <i class="layui-icon layui-icon-music"></i>
+                    <cite>视频管理</cite>
+                    <i class="iconfont nav_right">&#xe6a7;</i>
+                </a>
+                <ul class="sub-menu">
+                    <li><a _href="html/video-add.html"><i class="iconfont">&#xe6a7;</i><cite>视频上传</cite></a></li>
+                    <li><a _href="html/video-list.html"><i class="iconfont">&#xe6a7;</i><cite>视频列表</cite></a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="javascript:;">
+                    <i class="layui-icon layui-icon-engine"></i>
+                    <cite>频道管理</cite>
+                    <i class="iconfont nav_right">&#xe6a7;</i>
+                </a>
+                <ul class="sub-menu">
+                    <li><a _href="html/ablum-add.html"><i class="iconfont">&#xe6a7;</i><cite>频道添加</cite></a></li>
+                    <li><a _href="html/ablum-list.html"><i class="iconfont">&#xe6a7;</i><cite>频道列表</cite></a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="javascript:;">
+                    <i class="layui-icon layui-icon-group"></i>
+                    <cite>评论管理</cite>
+                    <i class="iconfont nav_right">&#xe6a7;</i>
+                </a>
+                <ul class="sub-menu">
+                    <li><a _href="html/singer-list.html"><i class="iconfont">&#xe6a7;</i><cite>评论列表</cite></a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="javascript:;">
+                    <i class="layui-icon layui-icon-user"></i>
+                    <cite>用户管理</cite>
+                    <i class="iconfont nav_right">&#xe6a7;</i>
+                </a>
+                <ul class="sub-menu">
+                    <li><a _href="html/user-list.html"><i class="iconfont">&#xe6a7;</i><cite>用户列表</cite></a></li>
+                    <li><a _href="html/user-list.html"><i class="iconfont">&#xe6a7;</i><cite>黑名单</cite></a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="javascript:;">
+                    <i class="layui-icon layui-icon-set"></i>
+                    <cite>系统管理</cite>
+                    <i class="iconfont nav_right">&#xe6a7;</i>
+                </a>
+                <ul class="sub-menu">
+                    <li><a _href="html/admin-add.html"><i class="iconfont">&#xe6a7;</i><cite>新增管理员</cite></a></li>
+                    <li><a _href="html/admin-list.html"><i class="iconfont">&#xe6a7;</i><cite>管理员列表</cite></a></li>
+                    <li><a _href="html/admin-update.html"><i class="iconfont">&#xe6a7;</i><cite>修改密码</cite></a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+<!-- <div class="x-slide_left"></div> -->
+<!-- 左侧菜单结束 -->
+<!-- 右侧主体开始 -->
+<div class="page-content">
+    <div class="layui-tab tab" lay-filter="xbs_tab" lay-allowclose="false">
+        <ul class="layui-tab-title">
+            <li class="home"><i class="layui-icon">&#xe68e;</i>我的桌面</li>
+        </ul>
+        <div class="layui-tab-content">
+            <div class="layui-tab-item layui-show">
+                <iframe src='html/home.html' name="iframe" style="border: 0"  class="x-iframe"></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="page-content-bg"></div>
+<!-- 右侧主体结束 -->
+<!-- 中部结束 -->
+<script src="./res/js/jquery.min.js"></script>
+<script src="./res/layui/layui.js"></script>
+<script src="./res/js/xadmin.js"></script>
+<script type="text/javascript">
+    layui.use(['layer', 'form', 'element', 'upload', 'jquery', 'table'], function () {
+        //模块初始化
+        var layer = layui.layer;
+        var form = layui.form;
+        var element = layui.element;
+        var upload = layui.upload;
+        var $ = layui.jquery;
+        var table = layui.table;
+
+        //从sessionStroage取出当前登录用户信息
+        let user = sessionStorage.getItem('user')
+        if(!user){
+            layer.msg('请登陆后再试',function(){
+                location.href='login.html'
+            })
+        }
+        //将json字符串解析为对象
+        user = JSON.parse(user)
+        //将用户名显示到页面右上角
+        $('#loginName').text(user.username)
+    });
+</script>
+</body>
+</html>

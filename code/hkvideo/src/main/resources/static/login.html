@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>管理员登录</title>
+    <link rel="stylesheet" href="./res/layui/css/layui.css">
+    <style>
+        *{
+            border-radius: 0 !important;
+        }
+        .login-box{
+            margin-top: 150px;
+        }
+        .login-panel{
+            padding:10px;
+            background: #fff;
+        }
+    </style>
+</head>
+<body class="layui-bg-gray">
+    <!--导航条-->
+    <ul class="layui-nav layui-bg-blue">
+        <li class="layui-nav-item">
+            <a href="#" class="layui-logo">
+                <img src="./res/images/logo.png" height="50px" alt="">
+            </a>
+        </li>
+    </ul>
+
+    <!--登录/注册框-->
+    <div class="layui-container login-box">
+        <div class="layui-row">
+            <div class="layui-col-md4 layui-col-md-offset4 login-panel">
+                <div class="layui-tab layui-tab-brief">
+                   <ul class="layui-tab-title">
+                       <li class="layui-this">管理员登录</li>
+                   </ul>
+                    <div class="layui-tab-content">
+                        <!--登录tab-->
+                        <div class="layui-tab-item layui-show">
+                            <form class="layui-form layui-form-pane">
+                                <div class="layui-form-item">
+                                    <label  class="layui-form-label">
+                                        <i class="layui-icon layui-icon-username"></i>
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <input type="text" name="username" class="layui-input" placeholder="请输入账号" required lay-verify="required" lay-vertype="tips" lay-reqtext="请输入账号">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <label  class="layui-form-label">
+                                        <i class="layui-icon layui-icon-password"></i>
+                                    </label>
+                                    <div class="layui-input-block">
+                                        <input type="password" name="password" class="layui-input" placeholder="请输入密码" required lay-verify="required" lay-vertype="tips" lay-reqtext="请输入密码" autocomplete="off">
+                                    </div>
+                                </div>
+                                <div class="layui-form-item">
+                                    <input type="checkbox"  name="save" class="layui-bg-blue" title="保存一周" lay-skin="primary">
+                                </div>
+                                <div class="layui-form-item">
+                                     <button type="button" class="layui-btn layui-btn-normal layui-btn-fluid"  lay-submit lay-filter="formLogin">登录</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div style="text-align: center;margin-top: 10px;">&copy;软帝集团 & 湖北商贸学院</div>
+    </div>
+
+    <script src="./res/layui/layui.js"></script>
+    <script>
+        layui.use(function(){
+            var ele = layui.element;
+            var form = layui.form;
+            var $ = layui.jquery;
+
+            form.on('submit(formLogin)',function(data){
+                //获取表单数据
+                let formData = data.field
+                //发送ajax请求，完成登录流程
+                $.get('/admin/login',formData,function(resp){
+                    if(resp.code === 0){
+                        //登录成功
+                        layer.msg(resp.msg,function(){
+                            //将当前登录用户信息存储(将登录的用户信息转换为json字符串存储到session缓存)
+                            sessionStorage.setItem('user',JSON.stringify(resp.data))
+                            location.href='main.html'
+                        })
+                    }else{
+                        //登录失败
+                        layer.alert(resp.msg,{icon:2})
+                    }
+                })
+                return false;
+            })
+
+        })
+    </script>
+</body>
+</html>

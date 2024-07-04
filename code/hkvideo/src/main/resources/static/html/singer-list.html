@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="../res/layui/css/layui.css">
+    <style>
+        #userInfoDialog {
+            padding: 20px;
+            width: 400px;
+            display: none; /*隐藏层*/
+        }
+
+        #userInfoDialog p {
+            padding: 10px 0;
+        }
+
+        .text {
+            max-height: 3.6em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            line-height: 1.2em;
+        }
+    </style>
+
+
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-header">歌手列表</div>
+        <div class="layui-card-body">
+            <table id="singerlist" lay-filter="singerFilter"></table>
+        </div>
+    </div>
+</div>
+<!--歌手详情对话框-->
+<div id="singerDialog" style="padding:16px;display: none;">
+    <table class="layui-table" lay-skin="nob">
+        <tr>
+            <td rowspan="3"><img id="headimg" src="" alt=""></td>
+            <td><span id="sname" class="layui-font-22"></span></td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <span id="details"></span>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" class="text">
+                <span id="summary"></span>
+            </td>
+        </tr>
+    </table>
+    <hr>
+    <h2 class="layui-padding-2">专辑 <span id="ablumCount"></span></h2>
+    <div id="ablumTable" class="layui-col-space10">
+    </div>
+    <hr>
+</div>
+
+<script src="../res/layui/layui.js"></script>
+<script>
+    layui.use(function () {
+        //加载获取table模块
+        var table = layui.table;
+        //加载获取layer弹层模块
+        var layer = layui.layer;
+        //加载jquery对象
+        var $ = layui.jquery;
+
+    })
+</script>
+
+
+<!--操作栏自定义模板-->
+<script id="rowTools" type="text/html">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-normal layui-btn-xs" lay-event="details">
+            <i class="layui-icon layui-icon-more"></i>
+            详情
+        </button>
+        <button class="layui-btn layui-btn-warm layui-btn-xs" lay-event="edit">
+            <i class="layui-icon layui-icon-edit"></i>
+            修改
+        </button>
+        <button class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">
+            <i class="layui-icon layui-icon-delete"></i>
+            删除
+        </button>
+    </div>
+</script>
+
+
+</body>
+</html>

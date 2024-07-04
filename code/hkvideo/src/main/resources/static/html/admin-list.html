@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="../res/layui/css/layui.css">
+    <style>
+        #userInfoDialog {
+            padding: 20px;
+            width: 400px;
+            display: none; /*隐藏层*/
+        }
+
+        #userInfoDialog p {
+            padding: 10px 0;
+        }
+    </style>
+
+
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-header">管理员列表</div>
+        <div class="layui-card-body">
+            <table id="adminlist" lay-filter="adminFilter"></table>
+        </div>
+    </div>
+</div>
+<!--用户信息对话框-->
+<div id="userInfoDialog">
+    <table class="layui-table">
+        <tr>
+            <td>用户名</td>
+            <td><span id="username"></span></td>
+        </tr>
+        <tr>
+            <td>添加时间</td>
+            <td><span id="addtime"></span></td>
+        </tr>
+        <tr>
+            <td>状态</td>
+            <td><span id="status"></span></td>
+        </tr>
+    </table>
+</div>
+
+<script src="../res/layui/layui.js"></script>
+<script>
+    layui.use(function () {
+        //加载获取table模块
+        var table = layui.table;
+        //加载获取layer弹层模块
+        var layer = layui.layer;
+        //加载jquery对象
+        var $ = layui.jquery;
+        var util = layui.util;
+
+
+    })
+</script>
+
+
+<!--操作栏自定义模板-->
+<script id="rowTools" type="text/html">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-normal layui-btn-xs" lay-event="details">
+            <i class="layui-icon layui-icon-list"></i>
+            详情
+        </button>
+        <button class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">
+            <i class="layui-icon layui-icon-delete"></i>
+            删除
+        </button>
+        {{# if(d.status === 0){ }}
+        <button class="layui-btn layui-btn-warm layui-btn-xs" lay-event="updateStatus" data-status="1">
+            <i class="layui-icon layui-icon-close-fill"></i>
+            禁用
+        </button>
+        {{# }else{ }}
+        <button class="layui-btn layui-btn-normal layui-btn-xs" lay-event="updateStatus" data-status="0">
+            <i class="layui-icon layui-icon-ok-circle"></i>
+            启用
+        </button>
+        {{# } }}
+    </div>
+</script>
+
+
+</body>
+</html>

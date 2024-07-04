@@ -67,7 +67,7 @@ public class Video implements Serializable {
     private Integer forward;
 
     /**
-     * 视频状态：0-审核中  1-禁用   2-正常  
+     * 视频状态：0-审核中  1-审核失败   2-审核通过
      */
     private Integer status;
 
@@ -90,6 +90,15 @@ public class Video implements Serializable {
      * 频道分类
      */
     private Integer cid;
+
+    @TableField(exist = false)
+    private Admin admin;
+
+    @TableField(exist = false)
+    private User user;
+
+    @TableField(exist = false)
+    private Category category;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

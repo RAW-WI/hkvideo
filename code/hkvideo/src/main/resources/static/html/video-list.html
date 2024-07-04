@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="../res/layui/css/layui.css">
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-header">视频列表</div>
+        <div class="layui-card-body">
+            <table id="videolist" lay-filter="videoFilter"></table>
+        </div>
+    </div>
+</div>
+
+<script src="../res/layui/layui.js"></script>
+<script>
+    layui.use(function () {
+        //获取模块对象
+        var table = layui.table;
+        var $ = layui.jquery;
+        var layer = layui.layer;
+        var util = layui.util;
+        var form = layui.form;
+
+        //数据表格渲染
+        table.render({
+            elem:'#videolist'
+            ,url:'/video/list'
+            ,toolbar:'#toolbar'   //头工具栏配置
+            ,page:{
+                limit:2,
+                limits:[2,5,10,15,20],
+                theme:'#1e9fff'
+            }
+            ,cols:[[
+                {type:'checkbox'}
+                ,{title:'序号',type:'numbers'}
+                ,{title:'封面',templet:'<div><img src="{{d.coverimg}}" alt=""></div>'}
+                ,{title:'标题',field:'title'}
+                ,{title:'频道',templet:'<div>{{ d.category.name }}</div>'}
+                ,{title:'作者',templet:'<div>{{ d.user.username }}</div>'}
+                ,{title:'发布时间',width:200,templet:'<div>{{ layui.util.toDateString(d.releasetime,"yyyy年MM月dd日 HH:mm:ss") }}</div>'}
+                ,{title:'观看数',field:'viewcount'}
+                ,{title:'点赞数',field:'lovecount'}
+                ,{title:'标签',field:'tags'}
+                ,{title:'状态',templet:function(d){
+                   return status(d.status)
+                }}
+                ,{title:'操作',width: 220,templet: '#rowTools'}
+            ]]
+        })
+
+        //为表格行绑定行工具事件
+        table.on('tool(videoFilter)',function (obj) {
+            //获取事件名
+            let layEvent = obj.event
+            switch(layEvent){
+                case 'details':
+                    //详情
+                    layer.open({
+                        type: 1, // page 层类型
+                        title: '视频详情',
+                        shade: 0.6, // 遮罩透明度
+                        shadeClose: true, // 点击遮罩区域，关闭弹层
+                        maxmin: true, // 允许全屏最小化
+                        anim: 0, // 0-6 的动画形式，-1 不开启
+                        content: $('#video-details-dialog'),
+                        btn:['关闭'],
+                        success:function(layero,index,that){  //当弹层成功打开之后触发
+                            //获取当前数据行
+                            data = obj.data
+                            //填充数据到对应弹层元素中
+                            layero.find('#coverimg').prop('src',data.coverimg)
+                            layero.find('#title').text(data.title)
+                            layero.find('#cname').text(data.category.name)
+                            layero.find('#author').text(data.user.username)
+                            layero.find('#releasetime').text(layui.util.toDateString(data.releasetime,"yyyy年MM月dd日 HH:mm:ss"))
+                            layero.find('#viewcount').text(data.viewcount)
+                            layero.find('#lovecount').text(data.lovecount)
+                            layero.find('#favcount').text(data.favcount)
+                            layero.find('#summary').text(data.summary)
+                            layero.find('#forward').text(data.forward)
+                            layero.find('#admin').text(data.admin ? data.admin.username : '未分配')
+                            layero.find('#status').html(status(data.status))
+                            layero.find('#tags').html(tags(data.tags))
+                        }
+                    });
+                    break;
+                case 'edit':
+                    //编辑
+                    break;
+                case 'del':
+                    //删除
+                    break;
+            }
+        })
+
+        //为表格绑定头工具事件
+        table.on('toolbar(videoFilter)',function(obj){
+
+        })
+
+        //根据审核状态返回不同的徽章效果
+        function status(flag){
+            if(flag === 0){
+                return '<span class="layui-badge layui-bg-orange">审核中</span>'
+            }else if(flag === 1){
+                return '<span class="layui-badge layui-bg-red">审核失败</span>'
+            }else{
+                return '<span class="layui-badge layui-bg-green">审核通过</span>'
+            }
+        }
+
+        //将标签显示为徽章效果
+        function tags(t){
+            //判断标签是否包含逗号
+            if(t.includes(',')){
+                //使用“,”拆分标签
+                let tags = t.split(',')
+                let html = ''
+                for(let i=0;i<tags.length;i++){
+                    html += `<span class="layui-badge layui-bg-blue">${tags[i]}</span>&nbsp;`
+                }
+                return html
+            }else{
+                return `<span class="layui-badge layui-bg-blue">${t}</span>`
+            }
+        }
+
+
+    })
+</script>
+<!--自定义头工具栏-->
+<script id="toolbar" type="text/html">
+    <div class="layui-inline">
+        <button class="layui-btn layui-btn-danger" lay-event="dels">
+            <i class="layui-icon layui-icon-delete"></i>
+            批量删除
+        </button>
+        <div class="layui-input-inline" style="width: 200px">
+            <input type="text" class="layui-input" id="keyword" placeholder="请输入查询关键字">
+        </div>
+        <button class="layui-btn layui-btn-normal" lay-event="search">
+            <i class="layui-icon layui-icon-search"></i>
+            搜索
+        </button>
+    </div>
+</script>
+<!--自定义行工具栏-->
+<script id="rowTools" type="text/html">
+    <div class="layui-btn-group">
+        <button class="layui-btn layui-btn-normal layui-btn-xs" lay-event="details">
+            <i class="layui-icon layui-icon-about"></i>
+            详情
+        </button>
+        <button class="layui-btn layui-btn-warm layui-btn-xs" lay-event="edit">
+            <i class="layui-icon layui-icon-edit"></i>
+            编辑
+        </button>
+        <button class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">
+            <i class="layui-icon layui-icon-delete"></i>
+            删除
+        </button>
+    </div>
+</script>
+
+<!--试听按钮的页面模板-->
+<script id="preview" type="text/html">
+    <button class="layui-btn layui-btn-normal layui-btn-xs preview-btn" lay-event="playOrPause" data-playing="0"
+            data-src="{{d.path}}">
+        <i class="layui-icon layui-icon-play"></i>
+    </button>
+</script>
+
+
+<!--视频详情弹层-->
+<div id="video-details-dialog" style="display: none;padding: 20px">
+    <table class="layui-table" lay-even>
+        <tr>
+            <td rowspan="4"><img src="" id="coverimg" width="100px" alt=""></td>
+            <td>标题:</td>
+            <td id="title">xxx</td>
+            <td>频道:</td>
+            <td id="cname">xxxx</td>
+            <td>作者：</td>
+            <td id="author">xxxx</td>
+        </tr>
+        <tr>
+            <td class="layui-elip">观看数：</td>
+            <td id="viewcount" class="layui-elip">xxxx</td>
+            <td class="layui-elip">点赞数:</td>
+            <td id="lovecount" class="layui-elip">xxxx</td>
+            <td class="layui-elip">收藏数</td>
+            <td id="favcount">xxxx</td>
+        </tr>
+        <tr>
+            <td class="layui-elip">转发数：</td>
+            <td id="forward" class="layui-elip">xxxx</td>
+            <td class="layui-elip">审核状态:</td>
+            <td id="status" class="layui-elip">xxxx</td>
+            <td class="layui-elip">审核员：</td>
+            <td id="admin" class="layui-elip">xxxx</td>
+        </tr>
+        <tr>
+            <td>发布时间</td>
+            <td id="releasetime">xxx</td>
+            <td>标签</td>
+            <td colspan="3">
+                <div id="tags"></div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="7">视频简介</td>
+        </tr>
+        <tr>
+            <td colspan="7">
+                <div id="summary">
+                    这里是视频简介。。。。
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<!--歌曲编辑弹层-->
+<div id="music-edit-dialog" style="display: none;padding: 20px">
+    <form class="layui-form" id="musicInfo" lay-filter="music-info">
+        <input type="hidden" name="id">
+        <table class="layui-table" lay-even>
+            <tr>
+                <td rowspan="3"><img src="" class="coverImg" width="100px" alt=""></td>
+                <td>歌曲名:</td>
+                <td><input type="text" name="name" class="layui-input"></td>
+                <td>专辑:</td>
+                <td>
+                    <select name="aid" id="aid" lay-filter="select-filter">
+                        <option value="0">匿名</option>
+                    </select>
+                </td>
+                <td>歌手：</td>
+                <td><input type="text" name="sname" class="layui-input"></td>
+            </tr>
+            <tr>
+                <td>发行公司：</td>
+                <td><input type="text" class="layui-input" name="company" readonly></td>
+                <td>发行时间</td>
+                <td><input type="text" class="layui-input" name="releasedate" readonly></td>
+                <td>歌曲风格</td>
+                <td>
+                    <select name="style">
+                        <option value="流行">流行</option>
+                        <option value="摇滚">摇滚</option>
+                        <option value="民谣">民谣</option>
+                        <option value="电子">电子</option>
+                        <option value="轻音乐">轻音乐</option>
+                        <option value="爵士">爵士</option>
+                        <option value="R&B">R&B</option>
+                        <option value="乡村">乡村</option>
+                        <option value="中国风">中国风</option>
+                        <option value="说唱">说唱</option>
+                        <option value="古典">古典</option>
+                        <option value="世界音乐">世界音乐</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>文件大小</td>
+                <td><input type="text" class="layui-input" name="size" readonly></td>
+                <td>持续时长</td>
+                <td><input type="text" class="layui-input" name="duration" readonly></td>
+                <td>试听</td>
+                <td>
+                    <audio src="" class="shiting" controls></audio>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="7">
+                    <textarea class="layui-textarea" name="lrc"></textarea>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <link rel="stylesheet" href="../res/layui/css/layui.css">
+    <style>
+        #userInfoDialog {
+            padding: 20px;
+            width: 400px;
+            display: none; /*隐藏层*/
+        }
+
+        #userInfoDialog p {
+            padding: 10px 0;
+        }
+
+        #pageBox {
+            overflow: hidden;
+        }
+
+        .count {
+            display: flex;
+            flex-direction: row;
+            background: #fff;
+            height: 80px;
+            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+
+        .count > div {
+            flex: 1;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .data {
+            font-size: 1.5em;
+        }
+    </style>
+
+</head>
+<body>
+
+<div style="padding: 15px;" id="pageBox">
+    <div class="count-box">
+        <div class="layui-row layui-col-space16">
+            <div class="layui-col-md3">
+                <div class="count">
+                    <div class="title layui-bg-green center">
+                        <i class="layui-icon layui-icon-music"></i>
+                        视频
+                    </div>
+                    <div class="data" id="musicCount">178312</div>
+                </div>
+            </div>
+            <div class="layui-col-md3">
+                <div class="count">
+                    <div class="title layui-bg-blue center">
+                        <i class="layui-icon layui-icon-carousel"></i>
+                        频道
+                    </div>
+                    <div class="data" id="ablumCount">80</div>
+                </div>
+            </div>
+            <div class="layui-col-md3">
+                <div class="count">
+                    <div class="title layui-bg-red center">
+                        <i class="layui-icon layui-icon-form"></i>
+                        评论
+                    </div>
+                    <div class="data" id="musiclistCount">2339840283</div>
+                </div>
+            </div>
+            <div class="layui-col-md3">
+                <div class="count">
+                    <div class="title layui-bg-orange center">
+                        <i class="layui-icon layui-icon-username"></i>
+                        用户
+                    </div>
+                    <div class="data" id="singerCount">100</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="layui-bg-gray" style="padding: 16px;">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-md6">
+                <div class="layui-card">
+                    <div class="layui-card-header">热搜视频TOP10</div>
+                    <div class="layui-card-body">
+                        <div id="hotMusic" style="width: 100%;height: 280px"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md6">
+                <div class="layui-card">
+                    <div class="layui-card-header">热搜频道TOP10</div>
+                    <div class="layui-card-body">
+                        <div id="hotAblum" style="width: 100%;height: 280px"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md6">
+                <div class="layui-card">
+                    <div class="layui-card-header">热门博主TOP10</div>
+                    <div class="layui-card-body">
+                        <div id="hotMusiclist" style="width: 100%;height: 280px"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="layui-col-md6">
+                <div class="layui-card">
+                    <div class="layui-card-header">热搜评论TOP10</div>
+                    <div class="layui-card-body">
+                        <div id="hotSinger" style="width: 100%;height: 280px"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="../res/layui/layui.js"></script>
+<script src="../res/echarts/echarts.js"></script>
+<script>
+    //JS
+    layui.config({
+        base: '/echarts/'
+    }).use(function () {
+        var element = layui.element
+            , layer = layui.layer
+            , util = layui.util
+            , $ = layui.$
+            , echarts = layui.echarts;
+
+
+    });
+</script>
+</body>
+</html>

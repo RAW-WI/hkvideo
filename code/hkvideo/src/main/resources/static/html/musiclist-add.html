@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="../res/layui/css/layui.css">
+
+</head>
+<body>
+<div class="layui-fluid">
+    <fieldset class="layui-elem-field layui-field-title">
+        <legend>歌单创建</legend>
+        <div class="layui-field-box">
+            <div class="layui-col-md6">
+                <form class="layui-form layui-form-pane" lay-filter="formMusic" id="formMusic">
+                    <div class="layui-form-item">
+                        <img class="layui-upload-img" id="ID-upload-demo-img"
+                             style="width:92px;height: 92px;border: 1px solid rgba(0,0,0,0.1)">
+                    </div>
+                    <!--表单控件项：文件上传（歌曲文件）-->
+                    <div class="layui-form-item">
+                        <button class="layui-btn layui-btn-normal" type="button" id="btnMusic">
+                            <i class="layui-icon layui-icon-upload"></i>
+                            选择封面图
+                        </button>
+                    </div>
+                    <!--表单控件项：歌曲名-->
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">歌单名:</label>
+                        <div class="layui-input-block">
+                            <input class="layui-input" type="text" name="name" id="musicname" lay-verify="required"
+                                   lay-verType="tips" lay-reqText="请输入歌曲名称">
+                        </div>
+                    </div>
+                    <!--表单控件项：标签-->
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">标签:</label>
+                        <div class="layui-input-block">
+                            <input class="layui-input" type="text" name="tags" id="tags"
+                                   placeholder="多个标签之间使用逗号(,)分隔" lay-verify="required" lay-verType="tips"
+                                   lay-reqText="请输入至少一个标签">
+                        </div>
+                    </div>
+                    <!-- 提交按钮    -->
+                    <div class="layui-form-item" style="text-align: right">
+                        <button type="button" class="layui-btn layui-btn-warm" lay-submit id="addMusic">确认添加
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </fieldset>
+</div>
+<script src="../res/layui/layui.js"></script>
+<script>
+    layui.use(function () {
+        var form = layui.form;
+        var layer = layui.layer;
+        var $ = layui.jquery;
+        //获取文件上传组件
+        var upload = layui.upload;
+
+    })
+</script>
+</body>
+</html>
