@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="../res/layui/css/layui.css">
+    <style>
+        #userInfoDialog {
+            padding: 20px;
+            width: 400px;
+            display: none; /*隐藏层*/
+        }
+
+        #userInfoDialog p {
+            padding: 10px 0;
+        }
+    </style>
+
+
+</head>
+<body>
+<div class="layui-fluid">
+
+    <div class="layui-card">
+        <div class="layui-card-header">频道列表</div>
+        <div class="layui-card-body">
+            <table id="category-list" lay-filter="categoryFilter"></table>
+        </div>
+    </div>
+
+</div>
+
+<script src="../res/layui/layui.js"></script>
+<script>
+    layui.use(function () {
+        //加载获取table模块
+        var table = layui.table;
+        //加载获取layer弹层模块
+        var layer = layui.layer;
+        var form = layui.form;
+        //加载jquery对象
+        var $ = layui.jquery;
+        //获取文件上传组件
+        var upload = layui.upload;
+
+        table.render({
+            elem: '#category-list',
+            url: '/category/list',
+            toolbar: '#toolbar',
+            page: {
+                limit:5,
+                limits:[5,10,15,20],
+                theme: '#1E9FFF'
+            },
+            cols: [[
+                {type: 'checkbox'},
+                {title: '序号', type: 'numbers'},
+                {title: '频道封面', templet: '<div><img src="{{d.img}}" alt="{{d.img}}"></div>'},
+                {field: 'name', title: '频道名'},
+                {field: 'summary', title: '频道介绍', width: 200},
+                {title: '操作', toolbar: '#rowTools'}
+            ]]
+        })
+
+    })
+
+</script>
+<script id="toolbar" type="text/html">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-bg-blue" onclick="location.href='category-add.html'">
+            <i class="layui-icon layui-icon-add-circle"></i>
+            新增频道
+        </button>
+    </div>
+</script>
+<!--操作栏自定义模板-->
+<script id="rowTools" type="text/html">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-normal layui-btn-xs" lay-event="upload">
+            <i class="layui-icon layui-icon-upload"></i>
+            上传视频
+        </button>
+        <button class="layui-btn layui-btn-warm layui-btn-xs" lay-event="edit">
+            <i class="layui-icon layui-icon-list"></i>
+            编辑
+        </button>
+        <button class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">
+            <i class="layui-icon layui-icon-delete"></i>
+            删除
+        </button>
+    </div>
+</script>
+
+<!--频道上传对话框-->
+<div id="uploadDialog" style="display: none;padding: 20px">
+    <fieldset class="layui-elem-field layui-field-title">
+        <legend>频道上传</legend>
+        <div class="layui-field-box">
+            <div class="layui-col-md12">
+                <form class="layui-form layui-form-pane" lay-filter="formMusic" id="formMusic">
+                    <!--表单控件项：文件上传（歌曲文件）-->
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">歌曲文件:</label>
+                        <button class="layui-btn layui-btn-normal" type="button" id="btnMusic">
+                            <i class="layui-icon layui-icon-upload"></i>
+                            选择文件
+                        </button>
+                        <!--播放器隐藏控件：获取总播放时长用-->
+                        <audio src="" id="player" style="display: none"></audio>
+                        <!--表单提交时提交歌曲总播放时长-->
+                        <input type="hidden" name="duration" id="duration"/>
+                    </div>
+                    <!--歌曲的频道选择控件-->
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">歌曲频道:</label>
+                        <div class="layui-input-block">
+                            <select name="aid" id="aid">
+                                <option value="0">匿名</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!--表单控件项：歌曲名-->
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">歌曲名:</label>
+                        <div class="layui-input-block">
+                            <input class="layui-input" type="text" name="name" id="musicname" lay-verify="required"
+                                   lay-verType="tips" lay-reqText="请输入歌曲名称">
+                        </div>
+                    </div>
+                    <!--表单控件项：歌曲风格流派-->
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">风格:</label>
+                        <div class="layui-input-block">
+                            <select name="style" id="style">
+                                <option value="流行">流行</option>
+                                <option value="摇滚">摇滚</option>
+                                <option value="民谣">民谣</option>
+                                <option value="Rap/Hip Hop">Rap/Hip Hop</option>
+                                <option value="pop">pop</option>
+                                <option value="电子">电子</option>
+                                <option value="轻频道">轻频道</option>
+                                <option value="爵士">爵士</option>
+                                <option value="R&B">R&B</option>
+                                <option value="乡村">乡村</option>
+                                <option value="中国风">中国风</option>
+                                <option value="说唱">说唱</option>
+                                <option value="古典">古典</option>
+                                <option value="世界频道">世界频道</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- 歌词控件    -->
+                    <div class="layui-form-item layui-form-text">
+                        <label class="layui-form-label">歌词:</label>
+                        <div class="layui-input-block">
+                            <textarea name="lrc" class="layui-textarea" placeholder="请填写歌词内容"></textarea>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </fieldset>
+</div>
+<!--频道详情对话框-->
+<div id="details" style="display: none;padding: 20px">
+    <table class="layui-table" lay-skin="nob">
+        <tr>
+            <td rowspan="3">
+                <img src="" id="ablumImg" height="96px" alt="">
+            </td>
+            <td colspan="2">
+                <h2><span id="ablumname"></span></h2>
+            </td>
+        </tr>
+        <tr>
+            <td>歌手: <span id="singer"></span></td>
+            <td>语种: <span id="language"></span></td>
+        </tr>
+        <tr>
+            <td>唱片公司: <span id="company"></span></td>
+            <td>发行时间: <span id="releasedate"></span></td>
+        </tr>
+    </table>
+    <!-- 频道详情表-->
+    <table id="ablumDetails"></table>
+</div>
+
+</body>
+</html>

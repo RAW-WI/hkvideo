@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="../res/layui/css/layui.css">
+
+</head>
+<body>
+<div class="layui-fluid">
+
+    <fieldset class="layui-elem-field layui-field-title">
+        <legend>频道添加</legend>
+        <div class="layui-field-box">
+            <div class="layui-col-md6">
+                <form class="layui-form layui-form-pane" lay-filter="formMusic" id="formMusic">
+                    <div class="layui-form-item">
+                        <img class="layui-upload-img" id="ID-upload-demo-img"
+                             style="width:92px;height: 92px;border: 1px solid rgba(0,0,0,0.1)">
+                        <input type="hidden" name="img" id="img">
+                    </div>
+                    <!--表单控件项：文件上传（频道封面）-->
+                    <div class="layui-form-item">
+                        <button class="layui-btn layui-btn-normal" type="button" id="btnCategory">
+                            <i class="layui-icon layui-icon-upload"></i>
+                            选择封面图
+                        </button>
+                    </div>
+                    <!--表单控件项：频道名-->
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">频道名:</label>
+                        <div class="layui-input-block">
+                            <input class="layui-input" type="text" name="name" id="name" lay-verify="required"
+                                   lay-verType="tips" lay-reqText="请输入频道名">
+                        </div>
+                    </div>
+                    <!-- 频道介绍    -->
+                    <div class="layui-form-item layui-form-text">
+                        <label class="layui-form-label">简介:</label>
+                        <div class="layui-input-block">
+                            <textarea name="summary" class="layui-textarea" placeholder="请填写频道简介"></textarea>
+                        </div>
+                    </div>
+                    <!-- 提交按钮    -->
+                    <div class="layui-form-item" style="text-align: right">
+                        <button type="button" class="layui-btn layui-btn-warm" lay-submit lay-filter="addCategory">确认添加
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </fieldset>
+</div>
+<script src="../res/layui/layui.js"></script>
+<script>
+    layui.use(function () {
+        var form = layui.form;
+        var layer = layui.layer;
+        var $ = layui.jquery;
+        //获取文件上传组件
+        var upload = layui.upload;
+
+        //对文件上传控件渲染
+        upload.render({
+            elem: '#btnCategory',
+            url:'/category/upload',
+            field: 'file',  /*设置文件域字段名，后端接口可以根据该字段名得到文件*/
+            accept: 'file', /*设置允许上传的文件类型*/
+            acceptMime: 'image/*', /*打开文件筛选框时过滤所需的文件（图片）*/
+            choose: function (obj) {
+                // 预读本地文件示例，不支持ie8
+                obj.preview(function (index, file, result) {
+                    $('#ID-upload-demo-img').attr('src', result); // 图片链接（base64）
+                });
+            }
+            , before: function (obj) {
+                layer.load(1)
+            }
+            , done: function (res) {
+                layer.closeAll('loading')
+                //上传完毕
+                if (res.code === 0) {
+                    layer.msg(res.msg, {icon: 1});
+                    $("#img").val(res.data);
+                } else {
+                    layer.msg(res.msg, {icon: 2});
+                }
+            }
+        })
+
+        form.on('submit(addCategory)', function (data) {
+            $.ajax({
+                url: '/category/add',
+                type: 'post',
+                data: data.field,
+                success: function (res) {
+                    if (res.code === 0) {
+                        layer.msg(res.msg, {icon: 1});
+                        setTimeout(function () {
+                            window.parent.location.reload();
+                        }, 1000);
+                    } else {
+                        layer.msg(res.msg, {icon: 2});
+                   }
+               }
+           })
+        })
+
+    })
+</script>
+</body>
+</html>

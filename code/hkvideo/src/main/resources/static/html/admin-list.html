@@ -27,24 +27,6 @@
         </div>
     </div>
 </div>
-<!--用户信息对话框-->
-<div id="userInfoDialog">
-    <table class="layui-table">
-        <tr>
-            <td>用户名</td>
-            <td><span id="username"></span></td>
-        </tr>
-        <tr>
-            <td>添加时间</td>
-            <td><span id="addtime"></span></td>
-        </tr>
-        <tr>
-            <td>状态</td>
-            <td><span id="status"></span></td>
-        </tr>
-    </table>
-</div>
-
 <script src="../res/layui/layui.js"></script>
 <script>
     layui.use(function () {
@@ -54,10 +36,45 @@
         var layer = layui.layer;
         //加载jquery对象
         var $ = layui.jquery;
-        var util = layui.util;
+
+        table.render({
+            elem: '#adminlist',
+            url: '/admin/list',
+            toolbar: '#toolbar',
+            page: {
+                limit: 5,
+                limits: [5, 10, 15, 20],
+                layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'],
+                theme: '#1E9FFF'
+            },
+            cols: [[
+                {type: 'checkbox'},
+                {type: 'numbers', title: "序号"},
+                {field: 'username', title:'用户名'},
+                {title:'邮箱',templet: '<div>{{d.email ? d.email : "未设置"}}</div>'},
+                {title:'手机号', templet: '<div>{{d.phone ? d.phone : "未设置"}}</div>'},
+                {title:'状态', templet: function(d){
+                    if(d.status === 0){
+                        return '<span class="layui-badge layui-bg-green">正常</span>';
+                    }else{
+                        return '<span class="layui-badge layui-bg-red">禁用</span>';
+                    }
+                }},
+                {title: '操作', toolbar: '#rowTools', width: 280}
+            ]]
+        })
 
 
     })
+</script>
+
+<script id="toolbar" type="text/html">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-bg-blue" onclick="location.href='admin-add.html'">
+            <i class="layui-icon layui-icon-add-circle"></i>
+            新增管理员
+        </button>
+    </div>
 </script>
 
 
@@ -67,6 +84,10 @@
         <button class="layui-btn layui-btn-normal layui-btn-xs" lay-event="details">
             <i class="layui-icon layui-icon-list"></i>
             详情
+        </button>
+        <button class="layui-btn layui-btn-warm layui-btn-xs" lay-event="del">
+            <i class="layui-icon layui-icon-edit"></i>
+            编辑
         </button>
         <button class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">
             <i class="layui-icon layui-icon-delete"></i>
@@ -85,6 +106,24 @@
         {{# } }}
     </div>
 </script>
+
+<!--用户信息对话框-->
+<div id="userInfoDialog">
+    <table class="layui-table">
+        <tr>
+            <td>用户名</td>
+            <td><span id="username"></span></td>
+        </tr>
+        <tr>
+            <td>添加时间</td>
+            <td><span id="addtime"></span></td>
+        </tr>
+        <tr>
+            <td>状态</td>
+            <td><span id="status"></span></td>
+        </tr>
+    </table>
+</div>
 
 
 </body>

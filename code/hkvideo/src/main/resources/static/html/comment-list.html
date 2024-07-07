@@ -31,7 +31,7 @@
     <div class="layui-card">
         <div class="layui-card-header">歌手列表</div>
         <div class="layui-card-body">
-            <table id="singerlist" lay-filter="singerFilter"></table>
+            <table id="commentlist" lay-filter="commentFilter"></table>
         </div>
     </div>
 </div>
@@ -70,9 +70,42 @@
         //加载jquery对象
         var $ = layui.jquery;
 
+        //渲染评论数据表格
+        table.render({
+            elem: '#commentlist',
+            url: '/comment/list',
+            page: {
+                limit: 5,
+                limits: [5, 10, 15, 20],
+                layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'],
+                theme: '#1E9FFF'
+            },
+            toolbar: '#toolbar',
+            cols: [[
+                {type: 'checkbox'},
+                {type: 'numbers', title: "序号"},
+                {field: 'content', title: '内容'},
+                {
+                    title: '评论时间',
+                    templet: '<div>{{layui.util.toDateString(d.commentime,"yyyy-MM-dd HH:mm:ss")}}</div>'
+                },
+                {title: '评论人', templet: '<div>{{d.user.username}}</div>'},
+                {title: '评论视频', templet: '<div>{{d.video.title}}</div>'},
+                {title: '操作', toolbar: '#rowTools', width: 150}
+            ]]
+        })
     })
 </script>
 
+<!--自定义头工具栏-->
+<script id="toolbar" type="text/html">
+    <div class="layui-inline">
+        <button class="layui-btn layui-btn-danger" lay-event="dels">
+            <i class="layui-icon layui-icon-delete"></i>
+            批量删除
+        </button>
+    </div>
+</script>
 
 <!--操作栏自定义模板-->
 <script id="rowTools" type="text/html">
@@ -80,10 +113,6 @@
         <button class="layui-btn layui-btn-normal layui-btn-xs" lay-event="details">
             <i class="layui-icon layui-icon-more"></i>
             详情
-        </button>
-        <button class="layui-btn layui-btn-warm layui-btn-xs" lay-event="edit">
-            <i class="layui-icon layui-icon-edit"></i>
-            修改
         </button>
         <button class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">
             <i class="layui-icon layui-icon-delete"></i>

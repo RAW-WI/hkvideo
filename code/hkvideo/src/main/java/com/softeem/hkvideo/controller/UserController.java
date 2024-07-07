@@ -85,4 +85,18 @@ public class UserController {
         long count = userService.count();
         return R.ok().setData(list).setCount(count);
     }
+
+    /**
+     * 黑名单列表分页查询
+     * @return
+     */
+    @RequestMapping("/black")
+    public R blackList(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "5") Integer limit){
+        //执行分页查询  select * from user      limit ?,?
+        List<User> list = userService.list(new Page<User>(page,limit),Wrappers.query(User.class).eq("status",1));
+        //查询总数据条数
+        long count = userService.count(Wrappers.query(User.class).eq("status",1));
+        return R.ok().setData(list).setCount(count);
+    }
+
 }
