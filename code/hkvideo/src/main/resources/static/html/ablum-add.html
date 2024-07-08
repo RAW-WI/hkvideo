@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="../res/layui/css/layui.css">
+
+</head>
+<body>
+<div class="layui-fluid">
+
+    <fieldset class="layui-elem-field layui-field-title">
+        <legend>专辑添加</legend>
+        <div class="layui-field-box">
+            <div class="layui-col-md6">
+                <form class="layui-form layui-form-pane" lay-filter="formMusic" id="formMusic">
+                    <div class="layui-form-item">
+                        <img class="layui-upload-img" id="ID-upload-demo-img"
+                             style="width:92px;height: 92px;border: 1px solid rgba(0,0,0,0.1)">
+                    </div>
+                    <!--表单控件项：文件上传（专辑封面）-->
+                    <div class="layui-form-item">
+                        <button class="layui-btn layui-btn-normal" type="button" id="btnMusic">
+                            <i class="layui-icon layui-icon-upload"></i>
+                            选择封面图
+                        </button>
+                    </div>
+                    <!--表单控件项：专辑名-->
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">专辑名:</label>
+                        <div class="layui-input-block">
+                            <input class="layui-input" type="text" name="name" id="musicname" lay-verify="required"
+                                   lay-verType="tips" lay-reqText="请输入专辑名">
+                        </div>
+                    </div>
+                    <!--表单控件项：专辑名-->
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">唱片公司:</label>
+                        <div class="layui-input-inline">
+                            <input class="layui-input" type="text" name="company" id="company" lay-verify="required"
+                                   lay-verType="tips" lay-reqText="请输入唱片公司">
+                        </div>
+                        <label class="layui-form-label">发行时间:</label>
+                        <div class="layui-input-inline">
+                            <input class="layui-input" type="text" name="releasedate" id="releasedate">
+                        </div>
+                    </div>
+                    <!--表单控件项：语种-->
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">语种:</label>
+                        <div class="layui-input-inline">
+                            <select name="language" id="style">
+                                <option value="国语">国语</option>
+                                <option value="粤语">粤语</option>
+                                <option value="闽南语">闽南语</option>
+                                <option value="英语">英语</option>
+                                <option value="日语">日语</option>
+                                <option value="韩语">韩语</option>
+                                <option value="法语">法语</option>
+                                <option value="德语">德语</option>
+                                <option value="俄语">俄语</option>
+                                <option value="阿拉伯语">阿拉伯语</option>
+                                <option value="纯音乐">纯音乐</option>
+                            </select>
+                        </div>
+                        <label class="layui-form-label">歌手:</label>
+                        <div class="layui-input-inline">
+                            <select name="sid" id="sid" lay-search="">
+                                <option value="0">匿名</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- 专辑介绍    -->
+                    <div class="layui-form-item layui-form-text">
+                        <label class="layui-form-label">简介:</label>
+                        <div class="layui-input-block">
+                            <textarea name="summary" class="layui-textarea" placeholder="请填写专辑简介"></textarea>
+                        </div>
+                    </div>
+                    <!-- 提交按钮    -->
+                    <div class="layui-form-item" style="text-align: right">
+                        <button type="button" class="layui-btn layui-btn-warm" lay-submit id="addMusic">确认添加
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </fieldset>
+</div>
+<script src="../res/layui/layui.js"></script>
+<script>
+    layui.use(function () {
+        var form = layui.form;
+        var layer = layui.layer;
+        var $ = layui.jquery;
+        //获取文件上传组件
+        var upload = layui.upload;
+        //日期组件
+        var laydate = layui.laydate;
+
+        // 渲染日期组件
+        laydate.render({
+            elem: '#releasedate'
+        });
+
+        //对文件上传控件渲染
+        upload.render({
+            elem: '#btnMusic',
+            auto: false,  /*禁止文件选择完成之后自动上传*/
+            field: 'myfile',  /*设置文件域字段名，后端接口可以根据该字段名得到文件*/
+            accept: 'file', /*设置允许上传的文件类型*/
+            acceptMime: 'image/*', /*打开文件筛选框时过滤所需的文件（图片）*/
+            choose: function (obj) {
+                // 预读本地文件示例，不支持ie8
+                obj.preview(function (index, file, result) {
+                    $('#ID-upload-demo-img').attr('src', result); // 图片链接（base64）
+                });
+            }
+        })
+
+    })
+</script>
+</body>
+</html>

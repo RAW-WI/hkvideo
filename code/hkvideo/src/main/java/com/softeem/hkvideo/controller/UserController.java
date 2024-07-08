@@ -2,6 +2,7 @@ package com.softeem.hkvideo.controller;
 
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.crypto.SecureUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.softeem.hkvideo.dto.R;
@@ -71,6 +72,25 @@ public class UserController {
         return b ? R.ok().setMsg("修改完成").setData(user) : R.fail().setMsg("修改失败");
     }
 
+    @RequestMapping("/status")
+    public R status (Integer id,Integer status){
+        System.out.println("已接收，id："+id+"，status："+status);
+        User user = userService.getById(id);
+        user.setStatus(status);
+        boolean b = userService.updateById(user);
+        return b ? R.ok().setMsg("修改完成").setData(user) : R.fail().setMsg("修改失败");
+    }
+    @RequestMapping("/delete")
+    public R status (Integer id){
+        try {
+            boolean b = userService.removeById(id);
+            return b ? R.ok().setMsg("修改完成").setCode(0) : R.fail().setMsg("修改失败");
+        }catch (Exception e){
+            e.printStackTrace();
+            return R.fail().setMsg("此用户不能删除，详情查看控制台").setDetails(e.toString());
+            }
+        }
+
     /**
      * 分页查询
      * @param page   当前页
@@ -78,25 +98,21 @@ public class UserController {
      * @return
      */
     @RequestMapping("/list")
-    public R list(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "5") Integer limit){
+    public R list(@RequestParam(defaultValue = "1") Integer page,
+                  @RequestParam(defaultValue = "5") Integer limit,
+                  @RequestParam(required = false, defaultValue = "") String keyword
+    ){
+        //创建查询条件
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        if (!keyword.isEmpty()) {
+            queryWrapper.lambda().like(User::getUsername, keyword);
+        }
         //执行分页查询  select * from user      limit ?,?
-        List<User> list = userService.list(new Page<User>(page,limit));
+//        System.out.println(keyword);
+        Page<User> pageObj = new Page<>(page, limit);
+        List<User> list = userService.page(pageObj, queryWrapper).getRecords();
         //查询总数据条数
         long count = userService.count();
         return R.ok().setData(list).setCount(count);
     }
-
-    /**
-     * 黑名单列表分页查询
-     * @return
-     */
-    @RequestMapping("/black")
-    public R blackList(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "5") Integer limit){
-        //执行分页查询  select * from user      limit ?,?
-        List<User> list = userService.list(new Page<User>(page,limit),Wrappers.query(User.class).eq("status",1));
-        //查询总数据条数
-        long count = userService.count(Wrappers.query(User.class).eq("status",1));
-        return R.ok().setData(list).setCount(count);
-    }
-
 }

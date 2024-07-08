@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="../res/layui/css/layui.css">
+    <style>
+        #userInfoDialog {
+            padding: 20px;
+            width: 400px;
+            display: none; /*隐藏层*/
+        }
+
+        #userInfoDialog p {
+            padding: 10px 0;
+        }
+
+        .text {
+            max-height: 3.6em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            line-height: 1.2em;
+        }
+    </style>
+
+
+</head>
+<body>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-header">评论列表</div>
+        <div class="layui-card-body">
+            <table id="reviewList" lay-filter="videoFilter"></table>
+        </div>
+    </div>
+</div>
+<!--歌手详情对话框-->
+<div id="singerDialog" style="padding:16px;display: none;">
+    <table class="layui-table" lay-skin="nob">
+        <tr>
+            <td rowspan="3"><img id="headimg" src="" alt=""></td>
+            <td><span id="sname" class="layui-font-22"></span></td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <span id="details"></span>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<script src="../res/layui/layui.js"></script>
+<script>
+    layui.use(['table', 'layer', 'jquery'], function() {
+        var table = layui.table;
+        var layer = layui.layer;
+        var $ = layui.jquery;
+        var oldnum = '';
+        //数据表格渲染
+        table.render({
+            elem:'#reviewList'
+            ,url:'/comment/list'
+            ,toolbar:'#toolbar'   //头工具栏配置
+            ,page:{
+                limit:5,//用于配置每页显示多少条数据
+                limits:[2,5,10,15,20],
+                theme:'#1e9fff'
+            }
+            ,cols:[[
+                // {type:'checkbox'}
+                ,{title:'序号',type:'numbers'}
+                ,{title:'评论',field:'content'}
+                ,{title:'发布时间',width:200,templet:'<div>{{ layui.util.toDateString(d.commtime,"yyyy年MM月dd日 HH:mm:ss") }}</div>'}
+                ,{title:'视频发布者',templet:'<div>{{d.user.username}}</div>'}
+                ,{title:'原视频',templet:'<div>{{d.video.title}}</div>'}
+                ,{title:'操作',width: 220,templet: '#rowTools'}
+            ]],
+            done: function (res, curr, count) {
+                $(function () {
+                    let time = null;
+                    $("#keyword").val(oldnum).focus();
+                    $("#keyword").on('input', function () {
+                        clearTimeout(time);
+                        var keyword = $("#keyword").val();
+                        time = setTimeout(function () {
+                            oldnum = keyword;
+                            search(keyword);
+                        }, 600)
+                    })
+                    clearTimeout(time);
+                })
+            }
+        })
+        //为表格行绑定行工具事件
+        // 为表格行绑定行工具事件
+        table.on('tool(videoFilter)', function(obj) {
+            let layEvent = obj.event;
+            switch(layEvent) {
+                case 'details':
+                    // 详情
+                    layer.open({
+                        type: 1, // page 层类型
+                        title: '视频详情',
+                        shade: 0.6, // 遮罩透明度
+                        shadeClose: true, // 点击遮罩区域，关闭弹层
+                        maxmin: true, // 允许全屏最小化
+                        anim: 0, // 0-6 的动画形式，-1 不开启
+                        content: $('#video-details-dialog'),
+                        btn:['关闭'],
+                        success: function(layero, index) { // 当弹层成功打开之后触发
+                            // 获取当前数据行
+                            var data = obj.data;
+                            // 填充数据到对应弹层元素中
+                            layero.find('#coverimg').prop('src', data.video.coverimg);
+                            layero.find('#title').text(data.content);
+                            layero.find('#author').text(data.user.username);
+                            layero.find('#releasetime').text(layui.util.toDateString(data.video.releasetime, "yyyy年MM月dd日 HH:mm:ss"));
+                            layero.find('#viewcount').text(data.video.viewcount);
+                            layero.find('#lovecount').text(data.video.lovecount);
+                            layero.find('#favcount').text(data.video.favcount);
+                            layero.find('#summary').text(data.video.summary);
+                            layero.find('#tags').html(tags(data.video.tags));
+                        }
+                    });
+                    break;
+                case 'edit':
+                    break;
+                case 'details':
+                    //详情
+                    layer.open({
+                        type: 1, // page 层类型
+                        title: '视频详情',
+                        shade: 0.6, // 遮罩透明度
+                        shadeClose: true, // 点击遮罩区域，关闭弹层
+                        maxmin: true, // 允许全屏最小化
+                        anim: 0, // 0-6 的动画形式，-1 不开启
+                        content: $('#video-details-dialog'),
+                        btn:['关闭'],
+                        success:function(layero,index,that){  //当弹层成功打开之后触发
+                            //获取当前数据行
+                            data = obj.data
+                            //填充数据到对应弹层元素中
+                            layero.find('#coverimg').prop('src',data.coverimg)
+                            layero.find('#title').text(data.title)
+                            layero.find('#cname').text(data.category.name)
+                            layero.find('#author').text(data.user.username)
+                            layero.find('#releasetime').text(layui.util.toDateString(data.releasetime,"yyyy年MM月dd日 HH:mm:ss"))
+                            layero.find('#viewcount').text(data.viewcount)
+                            layero.find('#lovecount').text(data.lovecount)
+                            layero.find('#favcount').text(data.favcount)
+                            layero.find('#summary').text(data.summary)
+                            layero.find('#forward').text(data.forward)
+                            layero.find('#admin').text(data.admin ? data.admin.username : '未分配')
+                            layero.find('#status').html(status(data.status))
+                            layero.find('#tags').html(tags(data.tags))
+                        }
+                    });
+                    break;
+                case 'del':
+                    // 删除
+                    layer.confirm('是否确定删除？', {
+                        btn: ['确定', '关闭'] //按钮
+                    }, function(){
+                        layer.msg('已经删除该用户', {icon: 1});
+                        $.ajax({
+                            url: '/comment/delete',
+                            type: 'post',
+                            data: {id: obj.data.id},
+                            success: function (result) {
+                                if (result.code === 0) {
+                                    //提示成功
+                                    layer.msg(result.msg, {icon: 1, time: 1000}, function () {
+                                        //触发更新
+                                        table.reload('reviewList', {
+                                            page: {
+                                                curr: 1
+                                            }
+                                        })
+                                    })
+                                } else {
+                                    layer.msg(result.msg, {icon: 2, time: 1000}, function () {
+                                        console.error(result.details)
+                                    })
+                                }
+                            },
+                            field: function (err) {
+                                console.log(111)
+                            }
+                        })
+                    }, function(){
+
+                    });
+                    break;
+            }
+        });
+        // 搜索功能
+        function search(keyword) {
+            table.reload('reviewList', {
+                where: {
+                    keyword: keyword
+                },
+                page: {
+                    curr: 1 // 重新从第 1 页开始
+                }
+            });
+        };
+    });
+    function tags(t){
+        //判断标签是否包含逗号
+        if(t.includes(',')){
+            //使用“,”拆分标签
+            let tags = t.split(',')
+            let html = ''
+            for(let i=0;i<tags.length;i++){
+                html += `<span class="layui-badge layui-bg-blue">${tags[i]}</span>&nbsp;`
+            }
+            return html
+        }else{
+            return `<span class="layui-badge layui-bg-blue">${t}</span>`
+        }
+    }
+
+</script>
+
+<!--操作栏自定义模板-->
+<script id="rowTools" type="text/html">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-normal layui-btn-xs" lay-event="details">
+            <i class="layui-icon layui-icon-more"></i>
+            详情
+        </button>
+        <button class="layui-btn layui-btn-warm layui-btn-xs" lay-event="edit">
+            <i class="layui-icon layui-icon-edit"></i>
+            修改
+        </button>
+        <button class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">
+            <i class="layui-icon layui-icon-delete"></i>
+            删除
+        </button>
+    </div>
+</script>
+<!--自定义头工具栏-->
+<script id="toolbar" type="text/html">
+    <div class="layui-inline">
+        <div class="layui-input-inline" style="width: 200px">
+            <input type="text" class="layui-input" id="keyword" placeholder="请输入查询关键字">
+        </div>
+    </div>
+</script>
+
+<!--评论详情弹层-->
+<div id="video-details-dialog" style="display: none;padding: 20px">
+    <table class="layui-table" lay-even>
+        <tr>
+            <td rowspan="4"><img src="" id="coverimg" width="100px" alt=""></td>
+            <td>评论:</td>
+            <td id="title">xxx</td>
+            <td>评论者：</td>
+            <td id="author" colspan="3">xxxx</td>
+        </tr>
+        <tr>
+            <td class="layui-elip">观看数：</td>
+            <td id="viewcount" class="layui-elip">xxxx</td>
+            <td class="layui-elip">点赞数:</td>
+            <td id="lovecount" class="layui-elip">xxxx</td>
+            <td class="layui-elip">收藏数</td>
+            <td id="favcount">xxxx</td>
+        </tr>
+        <tr>
+            <td class="layui-elip">转发数：</td>
+        </tr>
+        <tr>
+            <td>发布时间</td>
+            <td id="releasetime">xxx</td>
+            <td>标签</td>
+            <td colspan="3">
+                <div id="tags"></div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="7">视频简介</td>
+        </tr>
+        <tr>
+            <td colspan="7">
+                <div id="summary">
+                    这里是视频简介。。。。
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>

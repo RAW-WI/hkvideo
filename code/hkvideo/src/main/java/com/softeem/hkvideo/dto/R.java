@@ -33,6 +33,8 @@ public class R {
 
     /**数据结果集的总条数：前端分页用*/
     private Long count;
+    /**显示详细细腻*/
+    private String details;
 
     /**
      * 创建并返回一个表示操作成功的响应对象。

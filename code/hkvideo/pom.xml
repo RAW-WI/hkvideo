@@ -40,7 +40,12 @@
             <artifactId>qiniu-java-sdk</artifactId>
             <version>[7.13.0, 7.13.99]</version>
         </dependency>
-
+<!--        Ali-OSS-->
+        <dependency>
+            <groupId>com.aliyun.oss</groupId>
+            <artifactId>aliyun-sdk-oss</artifactId>
+            <version>3.8.0</version>
+        </dependency>
         <!--hutool工具包-->
         <dependency>
             <groupId>cn.hutool</groupId>

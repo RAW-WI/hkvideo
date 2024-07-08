@@ -108,10 +108,11 @@
         //文件上传组件渲染（封面图上传）
         upload.render({
             elem:'#btnCover'
-            ,url:'/video/upload'
+            ,url:'/video/uploadImage'
             ,acceptMime:'image/*'       //打开文件选择框时自动过滤出的文件类型（图片）
-            ,done:function(resp){ //成功上传之后的回调
-                if(resp.code === 0){
+            ,done:function(resp) { //成功上传之后的回调
+                // console.log("1212")
+                if (resp.code === 0) {
                     //将服务端返回的文件地址填充到隐藏域中
                     $('#coverimg').val(resp.data)
                     console.log(resp)
@@ -122,7 +123,7 @@
         //文件上传组件渲染（视频上传）
         upload.render({
             elem:'#btnVideo'
-            ,url:'/video/upload'
+            ,url:'/video/uploadVideo'
             ,accept:'file'       //提交文件前验证的文件类型
             ,acceptMime:'video/mp4,video/webm,video/ogg,video/mkv' //打开文件选择框时自动过滤出的文件类型（视频）
             ,before:function(){

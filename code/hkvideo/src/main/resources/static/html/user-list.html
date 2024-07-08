@@ -14,9 +14,14 @@
         #userInfoDialog p {
             padding: 10px 0;
         }
+        .text {
+            max-height: 3.6em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            line-height: 1.2em;
+        }
     </style>
-
-
 </head>
 <body>
 <div class="layui-fluid">
@@ -27,86 +32,6 @@
         </div>
     </div>
 </div>
-
-<script src="../res/layui/layui.js"></script>
-<script>
-    layui.use(function () {
-        //加载获取table模块
-        var table = layui.table;
-        //加载获取layer弹层模块
-        var layer = layui.layer;
-        //加载jquery对象
-        var $ = layui.jquery;
-
-        table.render({
-            elem: '#userlist',
-            url: '/user/list',
-            toolbar: '#toolbar',
-            page: {
-                limit: 5,
-                limits: [5, 10, 15, 20],
-                layout: ['limit', 'count', 'prev', 'page', 'next', 'skip'],
-                theme: '#1E9FFF'
-            },
-            cols: [[
-                {type: 'checkbox'},
-                {type: 'numbers', title: "序号"},
-                {field: 'username', title:'用户名'},
-                {title:'邮箱',templet: '<div>{{d.email ? d.email : "未设置"}}</div>'},
-                {title:'手机号', templet: '<div>{{d.phone ? d.phone : "未设置"}}</div>'},
-                {title:'生日', templet: '<div>{{d.birth ? layui.util.toDateString(d.birth,"yyyy-MM-dd") : "未设置"}}</div>'},
-                {title:'状态', templet: function(d){
-                    if(d.status === 0){
-                        return '<span class="layui-badge layui-bg-green">正常</span>';
-                    }else{
-                        return '<span class="layui-badge layui-bg-red">禁用</span>';
-                    }
-                }},
-                {title: '操作', toolbar: '#rowTools', width: 250}
-            ]]
-        })
-    })
-</script>
-
-<!--自定义头工具栏-->
-<script id="toolbar" type="text/html">
-    <div class="layui-inline">
-        <div class="layui-input-inline" style="width: 200px">
-            <input type="text" class="layui-input" id="keyword" placeholder="请输入查询关键字">
-        </div>
-        <button class="layui-btn layui-btn-normal" lay-event="search">
-            <i class="layui-icon layui-icon-search"></i>
-            搜索
-        </button>
-    </div>
-</script>
-
-
-<!--操作栏自定义模板-->
-<script id="rowTools" type="text/html">
-    <div class="layui-btn-container">
-        <button class="layui-btn layui-btn-normal layui-btn-xs" lay-event="details">
-            <i class="layui-icon layui-icon-list"></i>
-            详情
-        </button>
-        <button class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">
-            <i class="layui-icon layui-icon-delete"></i>
-            删除
-        </button>
-        {{# if(d.status === 0){ }}
-        <button class="layui-btn layui-btn-warm layui-btn-xs" lay-event="updateStatus" data-status="1">
-            <i class="layui-icon layui-icon-close-fill"></i>
-            禁用
-        </button>
-        {{# }else{ }}
-        <button class="layui-btn layui-btn-normal layui-btn-xs" lay-event="updateStatus" data-status="0">
-            <i class="layui-icon layui-icon-ok-circle"></i>
-            启用
-        </button>
-        {{# } }}
-    </div>
-</script>
-
 <!--用户信息对话框-->
 <div id="userInfoDialog">
     <table class="layui-table" lay-size="sm">
@@ -145,5 +70,199 @@
     </table>
 </div>
 
+<script src="../res/layui/layui.js"></script>
+<script>
+
+
+    layui.use(['table', 'layer', 'jquery'], function () {
+        var table = layui.table;
+        var layer = layui.layer;
+        var $ = layui.jquery;
+        var oldnum = '';
+        table.render({
+            elem: '#userlist',
+            loading: true,
+            url: '/user/list',
+            toolbar: '#toolbar',   // 头工具栏配置
+            page: {
+                limit: 5, // 每页显示多少条数据
+                limits: [2, 5, 10, 15, 20],
+                theme: '#1e9fff'
+            },
+            cols: [[
+                // {type: 'checkbox'},
+                {
+                    title: '头像',
+                    templet: '<div style="text-align: center;padding: 0;margin: 0;"><img style="width: 40px;height: 40px;align: center;justify-content: center" src="{{getImg(d.img)}}" alt=""></div>\''
+                },
+                {title: '用户名', field: 'username'},
+                {title: '电话', templet: '<div>{{d.phone ? d.phone : "未设置"}}</div>'},
+                {
+                    title: '生日',
+                    width: 200,
+                    templet: '<div>{{ d.birth ? layui.util.toDateString(d.birth, "yyyy年MM月dd日 HH:mm:ss") : "未设置" }}</div>'
+                },
+                {
+                    title: '创建时间',
+                    width: 200,
+                    templet: '<div>{{d.regtime ? layui.util.toDateString(d.regtime, "yyyy年MM月dd日 HH:mm:ss") : "未设置"}}</div>'
+                },
+                {title: '是否被拉黑', templet: '<div>{{d.status ? "是" : "否"}}</div>'},
+                {title: '操作', width: 220, templet: '#rowTools'}
+            ]],
+            done: function (res, curr, count) {
+                $(function () {
+                    let time = null;
+                    $("#keyword").val(oldnum).focus();
+                    $("#keyword").on('input', function () {
+                        clearTimeout(time);
+                        var keyword = $("#keyword").val();
+                        time = setTimeout(function () {
+                            oldnum = keyword;
+                            search(keyword);
+                        }, 600)
+                    })
+                    clearTimeout(time);
+                })
+            }
+        });
+        //为表格行绑定行工具事件
+        table.on('tool(userFilter)', function (obj) {
+            let layEvent = obj.event
+            switch (layEvent) {
+                case 'details':
+                    break;
+                case 'open':
+                    $.ajax({
+                        url: '/user/status',
+                        type: 'post',
+                        data: {id: obj.data.id, status: obj.data.status === 1 ? 0 : 1},
+                        success: function (result) {
+                            if (result.code === 0) {
+                                //提示成功
+                                layer.msg(result.msg, {icon: 1, time: 1000}, function () {
+                                    //触发更新
+                                    table.reload('userlist', {
+                                        page: {
+                                            curr: 1
+                                        }
+                                    })
+                                })
+                            } else {
+                                layer.msg(result.msg, {icon: 2, time: 1000}, function () {
+                                    console.error(result.details)
+                                })
+                            }
+                        },
+                        field: function (err) {
+                            console.log(111)
+                        }
+                    })
+                    break;
+                case 'del':
+                    layer.confirm('是否确定删除？', {
+                        btn: ['确定', '关闭'] //按钮
+                    }, function(){
+                        layer.msg('已经删除该用户', {icon: 1});
+                        $.ajax({
+                            url: '/user/delete',
+                            type: 'post',
+                            data: {id: obj.data.id},
+                            success: function (result) {
+                                if (result.code === 0) {
+                                    //提示成功
+                                    layer.msg(result.msg, {icon: 1, time: 1000}, function () {
+                                        //触发更新
+                                        table.reload('userlist', {
+                                            page: {
+                                                curr: 1
+                                            }
+                                        })
+                                    })
+                                } else {
+                                    layer.msg(result.msg, {icon: 2, time: 1000}, function () {
+                                        console.error(result.details)
+                                    })
+                                }
+                            },
+                            field: function (err) {
+                                console.log(111)
+                            }
+                        })
+                    }, function(){
+
+                    });
+                    break;
+            }
+        })
+
+        // 搜索功能
+        function search(keyword) {
+            table.reload('userlist', {
+                where: {
+                    keyword: keyword
+                },
+                page: {
+                    curr: 1 // 重新从第 1 页开始
+                }
+            });
+        };
+
+    });
+
+
+    function tags(t) {
+        if (t.includes(',')) {
+            let tags = t.split(',');
+            let html = '';
+            for (let i = 0; i < tags.length; i++) {
+                html += `<span class="layui-badge layui-bg-blue">${tags[i]}</span>&nbsp;`;
+            }
+            return html;
+        } else {
+            return `<span class="layui-badge layui-bg-blue">${t}</span>`;
+        }
+    }
+
+    function getImg(img) {
+        return img ? img : 'https://d29fhpw069ctt2.cloudfront.net/icon/image/84587/preview.svg';
+    }
+</script>
+<!--自定义头工具栏-->
+<script id="toolbar" type="text/html">
+    <div class="layui-inline">
+<!--        <button class="layui-btn layui-btn-danger" lay-event="dels">-->
+<!--            <i class="layui-icon layui-icon-delete"></i>-->
+<!--            批量删除-->
+<!--        </button>-->
+        <div class="layui-input-inline" style="width: 200px">
+            <input type="text" class="layui-input" id="keyword" placeholder="请输入用户名">
+        </div>
+        <!--        <div class="layui-btn layui-btn-normal" id="searchBtn">-->
+        <!--            <i class="layui-icon layui-icon-search"></i>-->
+        <!--            搜索-->
+        <!--        </div>-->
+    </div>
+</script>
+<!--自定义行工具栏-->
+<script id="rowTools" type="text/html">
+    <div class="layui-btn-group">
+        {{#  if(d.status !== 1){ }}
+        <button class="layui-btn layui-btn-normal layui-bg-red layui-btn-xs" lay-event="open">
+            <i class="layui-icon layui-icon-about"></i>
+            禁用
+        </button>
+        {{#  } else { }}
+        <button class="layui-btn layui-btn-normal layui-btn-xs" lay-event="open">
+            <i class="layui-icon layui-icon-about"></i>
+            启用
+        </button>
+        {{#  } }}
+        <button class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">
+            <i class="layui-icon layui-icon-delete"></i>
+            删除
+        </button>
+    </div>
+</script>
 </body>
 </html>

@@ -46,7 +46,10 @@ public class Comment implements Serializable {
 
     @TableField(exist = false)
     private Video video;
-
+    
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
+
+
+
 }

@@ -3,17 +3,14 @@ package com.softeem.hkvideo.controller;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.crypto.SecureUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.softeem.hkvideo.dto.R;
 import com.softeem.hkvideo.entity.Admin;
 import com.softeem.hkvideo.service.AdminService;
 import com.softeem.hkvideo.service.impl.AdminServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.Objects;
 
 @RequestMapping("/admin")
@@ -69,10 +66,5 @@ public class AdminController {
         return R.fail().setMsg("密码错误");
     }
 
-    @RequestMapping("/list")
-    public R list(@RequestParam(defaultValue = "1") Integer page, @RequestParam(defaultValue = "5") Integer limit) {
-        List<Admin> list = adminService.list(new Page<>(page, limit));
-        return R.ok().setData(list).setCount(adminService.count());
-    }
 
 }
